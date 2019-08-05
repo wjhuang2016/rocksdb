@@ -24,28 +24,11 @@
 #endif
 
 namespace rocksdb {
-static std::string IOErrorMsg(const std::string& context,
-                              const std::string& file_name) {
-  if (file_name.empty()) {
-    return context;
-  }
-  return context + ": " + file_name;
-}
+std::string IOErrorMsg(const std::string& context, const std::string& file_name);
 
 // file_name can be left empty if it is not unkown.
-static Status IOError(const std::string& context, const std::string& file_name,
-                      int err_number) {
-  switch (err_number) {
-  case ENOSPC:
-    return Status::NoSpace(IOErrorMsg(context, file_name),
-                           strerror(err_number));
-  case ESTALE:
-    return Status::IOError(Status::kStaleFile);
-  default:
-    return Status::IOError(IOErrorMsg(context, file_name),
-                           strerror(err_number));
-  }
-}
+Status IOError(const std::string& context, const std::string& file_name,
+               int err_number);
 
 class PosixHelper {
  public:

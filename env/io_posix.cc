@@ -42,6 +42,28 @@
 
 namespace rocksdb {
 
+std::string IOErrorMsg(const std::string& context,
+                              const std::string& file_name) {
+  if (file_name.empty()) {
+    return context;
+  }
+  return context + ": " + file_name;
+}
+
+Status IOError(const std::string& context, const std::string& file_name,
+                      int err_number) {
+  switch (err_number) {
+    case ENOSPC:
+      return Status::NoSpace(IOErrorMsg(context, file_name),
+                             strerror(err_number));
+    case ESTALE:
+      return Status::IOError(Status::kStaleFile);
+    default:
+      return Status::IOError(IOErrorMsg(context, file_name),
+                             strerror(err_number));
+  }
+}
+
 // A wrapper for fadvise, if the platform doesn't support fadvise,
 // it will simply return 0.
 int Fadvise(int fd, off_t offset, size_t len, int advice) {
