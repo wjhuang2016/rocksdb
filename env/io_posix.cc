@@ -1074,6 +1074,27 @@ Status PosixRandomRWFile::Close() {
   return Status::OK();
 }
 
+Status PosixRandomRWFile::SeekNextData(uint64_t& offset) {
+  int32_t tmp_offset = lseek(fd_, offset, SEEK_DATA);
+
+  if (tmp_offset == -1) {
+    return IOError("while lseek, offset = 0, whence = SEEK_DATA: ", filename_, errno);
+  }
+  offset = tmp_offset;
+  return Status::OK();
+}
+
+Status PosixRandomRWFile::PunchHole(uint64_t offset, size_t n) {
+  int32_t ret = fallocate(fd_, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, offset, n);
+
+  if (ret == -1) {
+    return IOError("while fallocate, offset = " + ToString(offset) + ", size: " + ToString(n), filename_, errno);
+  }
+
+  assert(ret == 0);
+  return Status::OK();
+}
+
 PosixMemoryMappedFileBuffer::~PosixMemoryMappedFileBuffer() {
   // TODO should have error handling though not much we can do...
   munmap(this->base_, length_);
