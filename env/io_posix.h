@@ -214,7 +214,7 @@ class PosixRandomRWFile : public RandomRWFile {
   virtual Status Fsync() override;
   virtual Status Close() override;
 
-  Status SeekNextData(uint64_t& offset);
+  Status SeekNextData(uint64_t* offset);
   Status PunchHole(uint64_t offset, size_t n);
 
  private:

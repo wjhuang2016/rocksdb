@@ -1074,13 +1074,13 @@ Status PosixRandomRWFile::Close() {
   return Status::OK();
 }
 
-Status PosixRandomRWFile::SeekNextData(uint64_t& offset) {
-  int32_t tmp_offset = lseek(fd_, offset, SEEK_DATA);
+Status PosixRandomRWFile::SeekNextData(uint64_t* offset) {
+  int32_t tmp_offset = lseek(fd_, *offset, SEEK_DATA);
 
   if (tmp_offset == -1) {
     return IOError("while lseek, offset = 0, whence = SEEK_DATA: ", filename_, errno);
   }
-  offset = tmp_offset;
+  *offset = tmp_offset;
   return Status::OK();
 }
 
