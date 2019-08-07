@@ -216,6 +216,7 @@ class PosixRandomRWFile : public RandomRWFile {
 
   Status SeekNextData(uint64_t* offset);
   Status PunchHole(uint64_t offset, size_t n);
+  Status GetSizeOnDisk(uint64_t* size);
 
  private:
   const std::string filename_;

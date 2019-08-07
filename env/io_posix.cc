@@ -1095,6 +1095,19 @@ Status PosixRandomRWFile::PunchHole(uint64_t offset, size_t n) {
   return Status::OK();
 }
 
+Status PosixRandomRWFile::GetSizeOnDisk(uint64_t* size) {
+  struct stat *stat_buf;
+  int ret = fstat(fd_, stat_buf);
+
+  if (ret == -1) {
+    return IOError("while fstat:", filename_, errno);
+  }
+  assert(ret == 0);
+
+  *size = stat_buf->st_blocks * stat_buf->st_blksize;
+  return Status::OK();
+}
+
 PosixMemoryMappedFileBuffer::~PosixMemoryMappedFileBuffer() {
   // TODO should have error handling though not much we can do...
   munmap(this->base_, length_);
