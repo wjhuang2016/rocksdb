@@ -1084,7 +1084,7 @@ Status PosixRandomRWFile::SeekNextData(uint64_t* offset) const {
   return Status::OK();
 }
 
-Status PosixRandomRWFile::PunchHole(uint64_t offset, size_t n) const {
+Status PosixRandomRWFile::PunchHole(uint64_t offset, size_t n) {
   int32_t ret = fallocate(fd_, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, offset, n);
 
   if (ret == -1) {
@@ -1095,7 +1095,7 @@ Status PosixRandomRWFile::PunchHole(uint64_t offset, size_t n) const {
   return Status::OK();
 }
 
-Status PosixRandomRWFile::GetSizeOnDisk(uint64_t* size) {
+Status PosixRandomRWFile::GetSizeOnDisk(uint64_t* size) const {
   struct stat stat_buf;
   int ret = fstat(fd_, &stat_buf);
 
