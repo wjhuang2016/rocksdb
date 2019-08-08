@@ -24,7 +24,8 @@
 #endif
 
 namespace rocksdb {
-std::string IOErrorMsg(const std::string& context, const std::string& file_name);
+std::string IOErrorMsg(const std::string& context,
+                       const std::string& file_name);
 
 // file_name can be left empty if it is not unkown.
 Status IOError(const std::string& context, const std::string& file_name,
@@ -214,9 +215,23 @@ class PosixRandomRWFile : public RandomRWFile {
   virtual Status Fsync() override;
   virtual Status Close() override;
 
-  Status SeekNextData(uint64_t* offset);
+  // Set the offset to the next location in the file greater than or
+  // equal to offset containing data. If offset points to data, then the
+  // file offset is set to offset. This function will skip the hole in the file
+  // until valid data.
+  Status SeekNextData(uint64_t* offset) const;
+
+  // Deallocates space (i.e., creates a hole) in the byte range starting
+  // at offset and continuing for len bytes. Within the specified range,
+  // partial filesystem blocks are zeroed, and whole filesystem blocks are
+  // removed from the file. After a successful call, subsequent reads from this
+  // range will return zeroes. Note that this function will not change the file
+  // size(as reported by stat(2)).
   Status PunchHole(uint64_t offset, size_t n);
-  Status GetSizeOnDisk(uint64_t* size);
+
+  // Get the real disk space used by this file. Note that it is not the same as
+  // file size.
+  Status GetSizeOnDisk(uint64_t* size) const;
 
  private:
   const std::string filename_;

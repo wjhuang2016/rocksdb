@@ -1074,7 +1074,7 @@ Status PosixRandomRWFile::Close() {
   return Status::OK();
 }
 
-Status PosixRandomRWFile::SeekNextData(uint64_t* offset) {
+Status PosixRandomRWFile::SeekNextData(uint64_t* offset) const {
   int32_t tmp_offset = lseek(fd_, *offset, SEEK_DATA);
 
   if (tmp_offset == -1) {
@@ -1084,7 +1084,7 @@ Status PosixRandomRWFile::SeekNextData(uint64_t* offset) {
   return Status::OK();
 }
 
-Status PosixRandomRWFile::PunchHole(uint64_t offset, size_t n) {
+Status PosixRandomRWFile::PunchHole(uint64_t offset, size_t n) const {
   int32_t ret = fallocate(fd_, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, offset, n);
 
   if (ret == -1) {
