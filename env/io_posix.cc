@@ -1104,7 +1104,7 @@ Status PosixRandomRWFile::GetSizeOnDisk(uint64_t* size) {
   }
   assert(ret == 0);
 
-  *size = stat_buf.st_blocks * stat_buf.st_blksize;
+  *size = stat_buf.st_blocks * 512;
   return Status::OK();
 }
 
